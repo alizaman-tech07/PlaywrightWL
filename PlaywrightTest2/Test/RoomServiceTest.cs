@@ -10,18 +10,10 @@ namespace PlaywrightTest2.Test
     [TestFixture]
     public class RoomServiceTests : BaseTest
     {
-        private RoomServicePage roomServicePage = null!;
-
-        [SetUp]
-        public void PageSetup()
-        {
-            roomServicePage = new RoomServicePage(Page);
-        }
-
         [Test]
-        public async Task Test001()
+        public async Task RoomServiceTest()
         {
-            await roomServicePage.OpenAsync();
+            var roomServicePage = new RoomServicePage(Page);
 
             await roomServicePage.OpenRoomServiceAsync();
         }

@@ -52,8 +52,10 @@ namespace PlaywrightTest2.Base
                 {
                     ViewportSize = new ViewportSize
                     {
-                        Width = 1920,
-                        Height = 1080
+                        //Width = 1920,
+                        //Height = 1080
+                        Width = 1280,
+                        Height = 600
                     }
                 });
 
