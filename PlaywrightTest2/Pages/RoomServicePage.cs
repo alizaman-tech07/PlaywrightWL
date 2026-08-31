@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using PlaywrightTest2.Base;
+using PlaywrightTest2.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,7 @@ namespace PlaywrightTest2.Pages
 {
     public class RoomServicePage : BasePage
     {
+        
         private readonly ILocator roomService;
         private readonly ILocator menuCategory;
 
