@@ -10,7 +10,7 @@ namespace PlaywrightTest2.Pages
     {
 
         private readonly ILocator successMessageBooking;
-        private readonly ILocator successMessageRoom;
+        public ILocator successMessageRoom;
         private readonly ILocator userName;
         private readonly ILocator userEmail;
         private readonly ILocator roomNo;

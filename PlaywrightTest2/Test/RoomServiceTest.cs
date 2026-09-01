@@ -23,6 +23,10 @@ namespace PlaywrightTest2.Test
 
             await checkoutPage.RoomServiceAsync("Ali", "ali@yopmail.com", "R-ali");
 
+            await Assertions.Expect(checkoutPage.successMessageRoom).ToContainTextAsync("Thank you for your order");
+
+            Console.WriteLine("Verified: Thank you for your order");
+            Console.WriteLine("Assert : Order Received!");
         }
     }
 }
