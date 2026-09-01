@@ -26,7 +26,7 @@ namespace PlaywrightTest2.Pages
             itemsModelPopup = page.Locator("//*[@id='dvMenu']/section[1]/div[2]/div[1]");
             selectMenuItems = page.Locator("//*[@id='dvMetaItems']/div[1]");
             itemsAddToCart = page.Locator("//*[contains(text(),'Add for')]");
-            cartToCheckout = page.Locator("basket-checkout-btn-wrap");
+            cartToCheckout = page.Locator(".basket-checkout-btn-wrap");
         }
 
         //public async Task OpenAsync()

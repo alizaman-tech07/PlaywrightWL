@@ -18,9 +18,7 @@ namespace PlaywrightTest2.Utilities
 
         public async Task CookiesAlertMethod()
         {
-            var acceptCookies = _page.Locator(
-                "//*[contains(@class,'cookies-p-btn-accept')]"
-            );
+            var acceptCookies = _page.Locator("//*[contains(@class,'cookies-p-btn-accept')]");
 
             if (await acceptCookies.CountAsync() > 0 &&
                 await acceptCookies.First.IsVisibleAsync())

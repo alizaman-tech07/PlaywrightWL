@@ -25,10 +25,10 @@ namespace PlaywrightTest2.Base
             await Page.GotoAsync(url);
         }
 
-        public async Task ClickAsync(ILocator locator)
-        {
-            await locator.ClickAsync();
-        }
+        //public async Task ClickAsync(ILocator locator)
+        //{
+        //    await locator.ClickAsync();
+        //}
 
         public async Task FillAsync(ILocator locator, string text)
         {

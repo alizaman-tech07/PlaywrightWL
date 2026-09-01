@@ -16,9 +16,13 @@ namespace PlaywrightTest2.Test
         {
             var alertHelper=new AlertHelper(Page);
             var roomServicePage = new RoomServicePage(Page);
+            var checkoutPage=new CheckoutPage(Page);
 
             await alertHelper.CookiesAlertMethod();
             await roomServicePage.OpenRoomServiceAsync();
+
+            await checkoutPage.RoomServiceAsync("Ali", "ali@yopmail.com", "R-ali");
+
         }
     }
 }

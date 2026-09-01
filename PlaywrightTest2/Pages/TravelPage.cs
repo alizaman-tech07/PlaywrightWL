@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PlaywrightTest2.Pages
 {
-    public class TravelClass
+    public class TravelPage
     {
     }
 }

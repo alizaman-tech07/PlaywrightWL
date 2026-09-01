@@ -4,7 +4,8 @@ using System.Text;
 
 namespace PlaywrightTest2.Test
 {
-    internal class HomeTest
+    public class HomeTest
     {
+
     }
 }
