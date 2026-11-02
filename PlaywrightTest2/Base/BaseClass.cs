@@ -1,21 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Playwright;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using AventStack.ExtentReports;
+using Microsoft.Playwright;
+using NUnit.Framework.Interfaces;
+using PlaywrightTest2.Utilities;
 
 namespace PlaywrightTest2.Base
 {
-    //Browser, Context aur Page yahan manage honge.
     /*
         BaseTest
     │
-    ├── Create Playwright
-    ├── Launch Browser
-    ├── Create Context
-    ├── Create Page
-    └── Close everything
-    Test class mein browser setup repeat nahi hoga.
+    ├── [OneTimeSetUp]  start Extent report
+    ├── [SetUp]         create Playwright/Browser/Context/Page + create Extent test + navigate
+    ├── [TearDown]      log pass/fail + screenshot on failure + dispose Playwright
+    └── [OneTimeTearDown] flush Extent (email send is opt-in via env vars)
     */
 
     public class BaseTest
@@ -24,19 +21,29 @@ namespace PlaywrightTest2.Base
         protected IBrowser Browser = null!;
         protected IBrowserContext Context = null!;
         protected IPage Page = null!;
-        protected string BaseUrl = string.Empty; //1. appsettings
+        protected string BaseUrl = string.Empty;
+
+        private static ExtentReports _extent = null!;
+
+        [OneTimeSetUp]
+        public void StartReport()
+        {
+            _extent = ExtentManager.GetInstance();
+        }
 
         [SetUp]
         public async Task Setup()
         {
-            //2. START - appsettings.json settings
-            var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false).Build();
+            // Create the Extent test node for this NUnit test (thread-local).
+            ExtentTestManager.CreateTest(TestContext.CurrentContext.Test.Name);
 
-            BaseUrl = configuration["BaseUrl"] ?? throw new Exception( "BaseUrl not found in appsettings.json");
+            // Base URL + title from Excel Environment sheet (parity with Selenium project).
+            // Row 2 = Staging (col 2 = url, col 3 = title). Row 3 = Live.
+            BaseUrl = ExcelHelper.GetCell("Environment", 2, 2);
+            string titleName = ExcelHelper.GetCell("Environment", 2, 3);
 
-            //END - appsettings.json settings
+            if (string.IsNullOrWhiteSpace(BaseUrl))
+                throw new Exception("Base URL not found in TestData.xlsx -> Environment sheet, row 2 col 2.");
 
             Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
@@ -52,8 +59,6 @@ namespace PlaywrightTest2.Base
                 {
                     ViewportSize = new ViewportSize
                     {
-                        //Width = 1920,
-                        //Height = 1080
                         Width = 1280,
                         Height = 600
                     }
@@ -61,17 +66,55 @@ namespace PlaywrightTest2.Base
 
             Page = await Context.NewPageAsync();
 
-            //3. appsettings
             await Page.GotoAsync(BaseUrl);
+
+            Assert.That(Page.Url, Does.Contain("https"));
         }
 
         [TearDown]
         public async Task TearDown()
         {
-            await Context.CloseAsync();
-            await Browser.CloseAsync();
+            var test = ExtentTestManager.TryGetTest();
+            var status = TestContext.CurrentContext.Result.Outcome.Status;
 
-            Playwright.Dispose();
+            if (test != null && Page != null)
+            {
+                if (status == TestStatus.Failed)
+                {
+                    var screenshot = new ScreenshotHelper(Page);
+                    string base64 = await screenshot.TakeScreenshotAsBase64Async(TestContext.CurrentContext.Test.Name);
+
+                    test.Fail("Test Failed")
+                        .AddScreenCaptureFromBase64String(base64);
+                }
+                else if (status == TestStatus.Passed)
+                {
+                    test.Pass("Test Passed");
+                }
+            }
+
+            if (Context != null) await Context.CloseAsync();
+            if (Browser != null) await Browser.CloseAsync();
+            Playwright?.Dispose();
+        }
+
+        [OneTimeTearDown]
+        public void EndReport()
+        {
+            _extent?.Flush();
+
+            // Email delivery is opt-in via environment variables (see EmailHelper).
+            // Enable by uncommenting the next block once REPORT_EMAIL_* vars are provisioned.
+            //
+            // string reportPath = System.IO.Path.Combine(PathHelper.GetRoot(), "ExtentReport.html");
+            // if (System.IO.File.Exists(reportPath))
+            // {
+            //     EmailHelper.SendReport(reportPath);
+            // }
+            // else
+            // {
+            //     Console.WriteLine("Email error: Report file not found at " + reportPath);
+            // }
         }
     }
 }

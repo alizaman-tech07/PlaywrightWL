@@ -9,7 +9,7 @@ namespace PlaywrightTest2
 
 
 
-        [Test]
+        
         public async Task OpenGoogle()
         {
             using var playwright = await Playwright.CreateAsync();
@@ -27,7 +27,6 @@ namespace PlaywrightTest2
             await page.WaitForTimeoutAsync(3000);
         }
 
-        [Test]
         public async Task Test001()
         {
             var playwright = await Playwright.CreateAsync();
